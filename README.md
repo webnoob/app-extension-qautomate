@@ -1,32 +1,31 @@
-Quasar App Extension Title <- change name
+QAutomate
 ===
 
-_Be sure to change this readme as appropriate for your app extension._
+Automate certain tasks when developing in Quasar.
 
-_Think about the organization of this file and how the information will be beneficial to the user._
+Currently supports:
 
-> Add a short description of your App Extension. What does it do? How is it beneficial? Why would someone want to use it?
+1. Automatically look for QComponents, Directives and Plugins used within your project and adding them to your Quasar.conf.js file.
 
 # Install
 ```bash
-quasar ext add my-ext <- change name
+quasar ext add qautomate
 ```
 Quasar CLI will retrieve it from NPM and install the extension.
 
 ## Prompts
 
-> If your app extension uses prompts, explain them here, otherwise remove this section.
+(yet to be implemented):
+
+1. AutoFix - Whether or not the AE should auto add to the Quasar conf or just notify in console.
 
 # Uninstall
 ```bash
-quasar ext remove my-ext <- change name
+quasar ext remove qautomate
 ```
 
-# Info
-> Add longer information here that will help the user of your app extension.
-
-# Other Info
-> Add other information that's not as important to know
+# Roadmap
+* CLI command to check the source for any *unused* components and list / remove from quasar.conf.js file.
 
 # Patreon
-If you like (and use) this App Extension, please consider becoming a Quasar [Patreon](https://www.patreon.com/quasarframework).
+If you like (and use) this App Extension, please consider becoming a Quasar [GH Sponsor](https://donate.quasar.dev).
