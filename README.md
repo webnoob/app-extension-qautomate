@@ -12,7 +12,7 @@ Automate certain tasks when developing in Quasar.
 
 Currently supports:
 
-1. Automatically look for QComponents, Directives and Plugins used within your project and adding them to your Quasar.conf.js file.
+1. Automatically look for Quasar Components, Directives and Plugins used within your project and add them to your Quasar.conf.js file.
 
 # Install
 ```bash
