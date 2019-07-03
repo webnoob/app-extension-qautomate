@@ -1,6 +1,13 @@
 QAutomate
 ===
 
+> Please note that QAutomate is in alpha state.
+
+![npm (scoped)](https://img.shields.io/npm/v/quasar-app-extension-qautomate.svg?style=plastic)
+[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/webnoob/app-extension-qautomate.svg)]()
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/webnoob/app-extension-qautomate.svg)]()
+[![npm](https://img.shields.io/npm/dt/@quasar/quasar-app-extension-qautomate.svg)](https://www.npmjs.com/package/quasar-app-extension-qautomate)
+
 Automate certain tasks when developing in Quasar.
 
 Currently supports:
