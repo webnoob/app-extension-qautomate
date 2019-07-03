@@ -145,7 +145,6 @@ module.exports = class QAutomate {
       quasarConf = require(quasarConfPath)(this._api.ctx),
       quasarConfFileData = fs.readFileSync(quasarConfPath, 'utf8')
 
-    fs.appendFileSync(path.join(this._api.appDir, 'debug.txt'), source, 'utf8')
     let newData = quasarConfFileData
 
     // Loop through our groups we want to check and process them.
