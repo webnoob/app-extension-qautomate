@@ -1,3 +1,5 @@
 {
-  "qautomate": {}
+  "qautomate": {
+    "quasarConfFixMode": "automatic"
+  }
 }

@@ -7,6 +7,7 @@
 
     <q-icon name="home" />
     <h1 v-touch-hold.mouse="touchHold">Test</h1>
+    <h1 v-touch-hold.mouse="touchHold">Test</h1>
   </q-page>
 </template>
 
