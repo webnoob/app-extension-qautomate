@@ -43,7 +43,7 @@ class QAutomatePlugin {
 
 const presentManualOptions = () => {
 
-  const missingItems = qAutomate.getMissingItems()
+  const missingItems = qAutomate.getAnalysisResult().missing
   let choices = []
 
   for (let group in missingItems) {
@@ -71,7 +71,7 @@ const presentManualOptions = () => {
 }
 
 const printSummary = (colorStyle, msg) => {
-  const missingItems = qAutomate.getMissingItems()
+  const missingItems = qAutomate.getAnalysisResult().missing
   if (Object.keys(missingItems).length > 0) {
     qAutomate.addLog(chalk`{bold {${colorStyle}  App Extension (qautomate) Info: ${msg}}}`)
   }
