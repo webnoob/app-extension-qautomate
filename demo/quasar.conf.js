@@ -43,22 +43,16 @@ module.exports = function (ctx) {
         'QList',
         'QItem',
         'QItemSection',
-        'QItemLabel',
-        'QInput',
-        'QSeparator'
+        'QItemLabel'
       ],
 
       directives: [
-        'Ripple',
-        'Scroll',
-        'TouchHold'
+        'Ripple'
       ],
 
       // Quasar plugins
       plugins: [
-        'Notify',
-        'Dialog',
-        'Platform'
+        'Notify'
       ]
     },
 

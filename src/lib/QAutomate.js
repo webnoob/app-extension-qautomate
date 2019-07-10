@@ -5,11 +5,22 @@ const paramCase = require('param-case')
 module.exports = class QAutomate {
   constructor (api) {
     this._api = api
-    this._whitelists = {}
-    this._missingItems = {}
+    this._quasarConfPath = path.join(this._api.appDir, 'quasar.conf.js')
+    this._quasarConf = require(this._quasarConfPath)(this._api.ctx)
+    this._quasarConfFileData = fs.readFileSync(this._quasarConfPath, 'utf8')
+    this._originalQuasarConfFileData = this._quasarConfFileData
 
-    this.cleanUp()
+    this.reset()
     this.buildWhitelist()
+  }
+
+  reset () {
+    this._whitelists = {}
+    this._analysis = {
+      items: {},
+      missing: {}
+    }
+    this.clearLog()
   }
 
   /**
@@ -72,22 +83,15 @@ module.exports = class QAutomate {
    * @param quasarConfFileData - The string of file data from quasarconf file.
    * @returns {*}
    */
-  mergeMissingGroupItems (group, quasarConf, itemsInUseInSource, quasarConfFileData) {
-    const missingItems = itemsInUseInSource.filter(e => !quasarConf.framework[group].includes(e))
-    if (!Array.isArray(this._missingItems[group])) {
-      this._missingItems[group] = []
-    }
+  mergeMissingGroupItems (group, itemsInUseInSource) {
+    const missingItems = itemsInUseInSource.filter(e => !this._quasarConf.framework[group].includes(e))
 
     if (missingItems.length > 0) {
-      let currentItems = this.getFrameworkGroup(group, quasarConfFileData)
+      let currentItems = this.getFrameworkGroup(group, this._quasarConfFileData)
 
       for (let missingItem of missingItems) {
         if (currentItems.indexOf(missingItem) === -1) {
           currentItems.push(missingItem)
-
-          if (this._missingItems[group].indexOf(missingItem) === -1) {
-            this._missingItems[group].push(missingItem)
-          }
         }
       }
       return currentItems
@@ -153,64 +157,65 @@ module.exports = class QAutomate {
    * @returns {{}|*}
    */
   analyse (source) {
-    const
-      quasarConfPath = path.join(this._api.appDir, 'quasar.conf.js'),
-      quasarConf = require(quasarConfPath)(this._api.ctx),
-      quasarConfFileData = fs.readFileSync(quasarConfPath, 'utf8')
-
-    let result = {
-      quasarConfFileData,
-      quasarConfPath,
-      source,
-      missing: {},
-      items: {}
-    }
-
-
     // Loop through our groups we want to check and process them.
     for (let group in this._whitelists) {
       const sourceItems = this.getSourceItems(group, source)
-      result.missing[group] = sourceItems.filter(e => !quasarConf.framework[group].includes(e))
-      result.items[group] = this.mergeMissingGroupItems(group, quasarConf, sourceItems, quasarConfFileData)
-    }
 
-    return result
+      // Build an array of missing items, grouped by type (i.e component, plugin, directive)
+      // without duplicates also taking into account the group might not have been initialised
+      // as an array.
+      const missingItems = sourceItems.filter(e =>
+        !this._quasarConf.framework[group].includes(e) &&
+        (
+          this._analysis.missing[group] === void 0 ||
+          !this._analysis.missing[group].includes(e)
+        )
+      )
+
+      if (missingItems.length > 0) {
+        this._analysis.missing[group] = [].concat.apply([], [this._analysis.missing[group] || [], missingItems])
+      }
+
+      const allMergedItems = this.mergeMissingGroupItems(group, sourceItems)
+      if (allMergedItems !== void 0 && allMergedItems.length > 0) {
+        this._analysis.items[group] = [].concat.apply([], [this._analysis.items[group] || [], allMergedItems.filter(f =>
+          !(this._analysis.items[group] || []).includes(f)
+        )])
+      }
+    }
   }
 
   /**
-   * Receive an analysis result and fix the source based on that.
+   * Apply all the analysis results that have been run.
    * @param analysisResult
    * @returns {*}
    */
-  fix (analysisResult) {
-    let newData = analysisResult.quasarConfFileData
-
-    for (let groupKey in analysisResult.items) {
-      const missingItems = analysisResult.items[groupKey]
-      if (missingItems !== void 0) {
-        newData = newData.replace(this.getGroupRegex(groupKey), this.stringifyConf(groupKey, missingItems))
+  applyChanges () {
+    for (let groupKey in this._analysis.items) {
+      const itemsToReplace = this._analysis.items[groupKey]
+      if (itemsToReplace !== void 0) {
+        this._quasarConfFileData = this._quasarConfFileData.replace(this.getGroupRegex(groupKey), this.stringifyConf(groupKey, itemsToReplace))
       }
     }
 
-    if (newData !== analysisResult.quasarConfFileData) {
-      fs.writeFileSync(analysisResult.quasarConfPath, newData, 'utf8')
+    if (this._quasarConfFileData !== this._originalQuasarConfFileData) {
+      this._originalQuasarConfFileData = this._quasarConfFileData
+      fs.writeFileSync(this._quasarConfPath, this._quasarConfFileData, 'utf8')
     }
-
-    return analysisResult.source
   }
 
   /**
-   * this.analyse() the source and then this.fix()
+   * this.analyse() the source and then this.applyChanges()
    * @param source
    * @returns {*}
    */
-  analyseAndFix (source) {
-    const analysisResult = this.analyse(source)
-    return this.fix(analysisResult)
+  analyseAndApply (source) {
+    this.analyse(source)
+    return this.applyChanges()
   }
 
   getMissingItems () {
-    return this._missingItems
+    return this._analysis.missing
   }
 
   addLog (msg) {
@@ -225,10 +230,5 @@ module.exports = class QAutomate {
     for (let log of this._logs) {
       console.log(log)
     }
-  }
-
-  cleanUp () {
-    this._missingItems = {}
-    this.clearLog()
   }
 }

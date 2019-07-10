@@ -7,6 +7,7 @@
 
 const QAutomate = require('./lib/QAutomate')
 const chalk = require('chalk')
+const inquirer = require('inquirer')
 let qAutomate = null
 
 class QAutomatePlugin {
@@ -20,7 +21,8 @@ class QAutomatePlugin {
         case 'automatic':
           // Needs a rework to get this working as the quasar.conf.js save on auto triggers a complete reload
           // and we lose the stored value in our qAutomate class.
-          // printSummary('bgGreen', 'Automatically added the following:')
+          printSummary('bgGreen', 'Automatically added the following:')
+          qAutomate.applyChanges()
           break
         case 'warn':
           printSummary('bgRed', 'Found missing items')
@@ -31,13 +33,41 @@ class QAutomatePlugin {
 
       }
 
+      // Write the buffer to console (gets cleared on HMR so handled internally)
       qAutomate.writeLog()
-      qAutomate.cleanUp()
+      // Reset the qAutomate instance for the next scan.
+      qAutomate.reset()
     })
   }
 }
 
 const presentManualOptions = () => {
+
+  const missingItems = qAutomate.getMissingItems()
+  let choices = []
+
+  for (let group in missingItems) {
+    choices.push(new inquirer.Separator(chalk`{green ${group} }`))
+
+
+    for (let item of missingItems[group]) {
+      choices.push({
+        name: item
+      })
+    }
+  }
+
+  inquirer.prompt([
+    {
+      type: 'checkbox',
+      message: chalk`{bgGreen Select items to add to quasar.conf.js}`,
+      name: 'items',
+      choices: choices
+    }
+  ]).then(answers => {
+    console.log(answers.items)
+    qAutomate.applyChanges(answers.items)
+  })
 }
 
 const printSummary = (colorStyle, msg) => {
@@ -63,7 +93,6 @@ const printSummary = (colorStyle, msg) => {
 const handlePromptType = (src, prompts) => {
   switch (prompts.quasarConfFixMode) {
     case 'automatic':
-      return qAutomate.analyseAndFix(src)
     case 'manual':
     default:
       qAutomate.analyse(src)
