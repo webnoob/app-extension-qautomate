@@ -22,10 +22,9 @@ Quasar CLI will retrieve it from NPM and install the extension.
 
 ## Prompts
 
-(yet to be implemented):
+**Mode** [Automatic | Manual | Warn] - How QAutomate should behave when missing items are detected.
 
-1. AutoFix - Whether or not the AE should auto add to the Quasar conf or just notify in console.
-2. Manual Mode - Show a list of missing components / directives / plugins and allow you to select which ones to add.
+**Sort** [True | False] - Should QAutomate sort the items in components, directives or plugins?
 
 # Uninstall
 ```bash
@@ -44,5 +43,5 @@ More to follow ...
 # Roadmap
 * CLI command to check the source for any *unused* components and list / remove from quasar.conf.js file.
 
-# Patreon
+# Support Us
 If you like (and use) this App Extension, please consider becoming a Quasar [GH Sponsor](https://donate.quasar.dev).
