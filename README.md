@@ -1,4 +1,4 @@
-QAutomate
+QAutomate (qautomate)
 ===
 
 > Please note that QAutomate is in alpha state.
@@ -8,11 +8,19 @@ QAutomate
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/webnoob/app-extension-qautomate.svg)]()
 [![npm](https://img.shields.io/npm/dt/@quasar/quasar-app-extension-qautomate.svg)](https://www.npmjs.com/package/quasar-app-extension-qautomate)
 
-Automate certain tasks when developing in Quasar.
+QAutomate is an UI App Extension for Quasar Framework v1. It will not work with legacy versions of Quasar Framework.
+
+This work is currently in alpha and there are expected changes while things get worked out. Your help with testing is greatly appreciated.
+
+Automate various tasks when developing in Quasar.
+
+QAutomate
+===
 
 Currently supports:
 
 1. Automatically look for Quasar Components, Directives and Plugins used within your project and add them to your Quasar.conf.js file.
+2. Sorting of Components, Directives and Plugins within your Quasar.conf.js file.
 
 # Install
 ```bash
