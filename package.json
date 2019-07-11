@@ -1,6 +1,6 @@
 {
   "name": "quasar-app-extension-qautomate",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "Automatically add missing Quasar components, directives and plugins to quasar.conf.js",
   "author": "webnoob <allangaunt@gmail.com>",
   "license": "MIT",
