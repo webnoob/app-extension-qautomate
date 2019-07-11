@@ -12,10 +12,10 @@ QAutomate is an UI App Extension for Quasar Framework v1. It will not work with 
 
 This work is currently in alpha and there are expected changes while things get worked out. Your help with testing is greatly appreciated.
 
-Automate various tasks when developing in Quasar.
-
 QAutomate
 ===
+
+Automate various tasks when developing in Quasar.
 
 Currently supports:
 
