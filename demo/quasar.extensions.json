@@ -1,5 +1,6 @@
 {
   "qautomate": {
-    "quasarConfFixMode": "automatic"
+    "quasarConfFixMode": "automatic",
+    "sort": true
   }
 }

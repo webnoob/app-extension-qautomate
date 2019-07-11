@@ -23,6 +23,12 @@ module.exports = () => {
           short: 'Warn Only' // Short name displayed after user picks this
         }
       ]
+    },
+    {
+      name: 'sort',
+      type: 'confirm',
+      message: 'Automatically sort items alphabetically?',
+      default: true
     }
   ]
 }

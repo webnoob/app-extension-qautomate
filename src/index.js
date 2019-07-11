@@ -131,7 +131,10 @@ const chainWebpack = function (api, chain, { isClient }) {
 }
 
 module.exports = function (api) {
-  qAutomate = new QAutomate(api)
+  qAutomate = new QAutomate(api, {
+    sort: api.prompts.sort
+  })
+  
   api.chainWebpack((chain, { isClient }) => chainWebpack(api, chain, isClient))
 
   // Register a plugin with a hook for logging etc.

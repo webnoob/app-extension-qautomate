@@ -4,12 +4,13 @@ const paramCase = require('param-case')
 
 module.exports = class QAutomate {
   
-  constructor (api) {
+  constructor (api, options) {
     this._api = api
     this._quasarConfPath = path.join(this._api.appDir, 'quasar.conf.js')
     this._quasarConf = require(this._quasarConfPath)(this._api.ctx)
     this._quasarConfFileData = fs.readFileSync(this._quasarConfPath, 'utf8')
     this._originalQuasarConfFileData = this._quasarConfFileData
+    this._options = options
 
     this.reset()
     this.buildWhitelist()
@@ -153,6 +154,10 @@ module.exports = class QAutomate {
       let itemsToReplace = selectedItems.length > 0
         ? this.mergeArrays(this._analysis.existing[group], this._analysis.missing[group], f => selectedItems.includes(f))
         : this._analysis.merged[group]
+  
+      if (this._options.sort) {
+        itemsToReplace = itemsToReplace.sort()
+      }
       
       if (itemsToReplace !== void 0) {
         this._quasarConfFileData = this._quasarConfFileData.replace(this.getGroupRegex(group), this.stringifyConfGroup(group, itemsToReplace))
