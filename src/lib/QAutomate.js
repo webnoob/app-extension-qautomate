@@ -11,6 +11,7 @@ module.exports = class QAutomate {
     this._quasarConfFileData = fs.readFileSync(this._quasarConfPath, 'utf8')
     this._originalQuasarConfFileData = this._quasarConfFileData
     this._options = options
+    this._forceApplyChanges = false
 
     this.reset()
     this.buildWhitelist()
@@ -24,6 +25,11 @@ module.exports = class QAutomate {
       merged: {}
     }
     this.clearLog()
+    
+    // If we're requiring changes to be saved, make sure they are before the reset happens.
+    if (this._forceApplyChanges) {
+      this.applyChanges()
+    }
   }
 
   /**
@@ -127,18 +133,19 @@ module.exports = class QAutomate {
       if (missingItems.length > 0) {
         this._analysis.missing[group] = this.mergeArrays(this._analysis.missing[group], missingItems)
       }
-
-      // Build the array of merged items grouped by type
-      // If auto mode, this can just be transplanted into quasar.conf.js
-      const allMergedItems = sourceItems.filter(e =>
-        !(this._analysis.merged[group] || []).includes(e)
-      )
-
-      if (allMergedItems.length > 0) {
-        this._analysis.merged[group] = this.mergeArrays(this._analysis.merged[group], allMergedItems)
-      }
-    
+  
       this._analysis.existing[group] = this._quasarConf.framework[group]
+      this._analysis.merged[group] = this.mergeArrays(this._analysis.existing[group], this._analysis.missing[group])
+      
+      // If sorting is enabled, check to see if we need to apply sorting.
+      // Then flag to force a save if reset is called before applyChanges()
+      if (this._options.sort) {
+        this._analysis.merged[group].sort()
+        // Using stringify here as as I know the data will always be an array.
+        if (JSON.stringify(this._analysis.existing[group]) !== JSON.stringify(this._analysis.merged[group])) {
+          this._forceApplyChanges = true
+        }
+      }
     }
   }
 
@@ -155,8 +162,9 @@ module.exports = class QAutomate {
         ? this.mergeArrays(this._analysis.existing[group], this._analysis.missing[group], f => selectedItems.includes(f))
         : this._analysis.merged[group]
   
+      // Call sort again as the manual items may have thrown off sorting.
       if (this._options.sort) {
-        itemsToReplace = itemsToReplace.sort()
+        itemsToReplace.sort()
       }
       
       if (itemsToReplace !== void 0) {
@@ -168,6 +176,8 @@ module.exports = class QAutomate {
       this._originalQuasarConfFileData = this._quasarConfFileData
       fs.writeFileSync(this._quasarConfPath, this._quasarConfFileData, 'utf8')
     }
+    
+    this._forceApplyChanges = false
   }
   
   /**

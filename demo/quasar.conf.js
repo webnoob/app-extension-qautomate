@@ -31,28 +31,34 @@ module.exports = function (ctx) {
       // all: true, // --- includes everything; for dev only!
 
       components: [
-        'QLayout',
-        'QHeader',
-        'QDrawer',
-        'QPageContainer',
-        'QPage',
-        'QToolbar',
-        'QToolbarTitle',
         'QBtn',
+        'QDrawer',
+        'QHeader',
         'QIcon',
-        'QList',
+        'QInput',
         'QItem',
+        'QItemLabel',
         'QItemSection',
-        'QItemLabel'
+        'QLayout',
+        'QList',
+        'QPage',
+        'QPageContainer',
+        'QSeparator',
+        'QToolbar',
+        'QToolbarTitle'
       ],
 
       directives: [
-        'Ripple'
+        'Ripple',
+        'Scroll',
+        'TouchHold'
       ],
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Dialog',
+        'Notify',
+        'Platform'
       ]
     },
 
