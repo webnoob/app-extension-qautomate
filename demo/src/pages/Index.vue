@@ -1,13 +1,14 @@
 <template>
   <q-page class="flex flex-center">
     <img alt="Quasar logo" src="~assets/quasar-logo-full.svg">
-    <q-separator class="full-width" style="border: 3px solid black" />
 
-    <q-input v-model="test" />
+    <q-separator class="full-width q-mx-lg" style="border: 2px solid black" />
 
-    <q-icon name="home" />
-    <h1 v-touch-hold.mouse="touchHold">Test</h1>
-    <h1 v-touch-hold.mouse="touchHold">Test</h1>
+    <q-input v-model="test" label="I'm a little input short and stout..." />
+
+    <q-icon name="home" class="full-width q-mx-lg" />
+    <br />
+    <h5 v-touch-hold.mouse="touchHold">Touch hold me!</h5>
   </q-page>
 </template>
 

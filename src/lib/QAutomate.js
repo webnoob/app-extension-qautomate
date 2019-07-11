@@ -124,7 +124,7 @@ module.exports = class QAutomate {
       )
 
       if (missingItems.length > 0) {
-        this._analysis.missing[group] = [].concat.apply([], [this._analysis.missing[group] || [], missingItems])
+        this._analysis.missing[group] = this.mergeArrays(this._analysis.missing[group], missingItems)
       }
 
       // Build the array of merged items grouped by type
@@ -134,7 +134,7 @@ module.exports = class QAutomate {
       )
 
       if (allMergedItems.length > 0) {
-        this._analysis.merged[group] = [].concat.apply([], [this._analysis.merged[group] || [], allMergedItems])
+        this._analysis.merged[group] = this.mergeArrays(this._analysis.merged[group], allMergedItems)
       }
     
       this._analysis.existing[group] = this._quasarConf.framework[group]
@@ -146,11 +146,16 @@ module.exports = class QAutomate {
    * @param analysisResult
    * @returns {*}
    */
-  applyChanges () {
-    for (let groupKey in this._analysis.merged) {
-      const itemsToReplace = this._analysis.merged[groupKey]
+  applyChanges (selectedItems = []) {
+    for (let group in this._analysis.merged) {
+  
+      // Pick out only the selected items for this group or add them all based on selectedItems
+      let itemsToReplace = selectedItems.length > 0
+        ? this.mergeArrays(this._analysis.existing[group], this._analysis.missing[group], f => selectedItems.includes(f))
+        : this._analysis.merged[group]
+      
       if (itemsToReplace !== void 0) {
-        this._quasarConfFileData = this._quasarConfFileData.replace(this.getGroupRegex(groupKey), this.stringifyConfGroup(groupKey, itemsToReplace))
+        this._quasarConfFileData = this._quasarConfFileData.replace(this.getGroupRegex(group), this.stringifyConfGroup(group, itemsToReplace))
       }
     }
 
@@ -158,6 +163,22 @@ module.exports = class QAutomate {
       this._originalQuasarConfFileData = this._quasarConfFileData
       fs.writeFileSync(this._quasarConfPath, this._quasarConfFileData, 'utf8')
     }
+  }
+  
+  /**
+   * Simple helper to merge 2 arrays with filter even if arrays aren't initialised.
+   * @param arr1
+   * @param arr2
+   * @param filterFn
+   * @returns {*[]}
+   */
+  mergeArrays (arr1, arr2, filterFn) {
+    const arr = arr2 || []
+    const filteredArray = typeof filterFn === 'function'
+      ? arr.filter(filterFn)
+      : arr
+    
+    return [].concat.apply([], [arr1 || [], filteredArray])
   }
 
   /**

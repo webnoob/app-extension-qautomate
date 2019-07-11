@@ -16,7 +16,7 @@ class QAutomatePlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.done.tap('done-compiling', () => {
+    compiler.hooks.done.tap('done-compiling', async () => {
       switch (this.quasarConfFixMode) {
         case 'automatic':
           // Needs a rework to get this working as the quasar.conf.js save on auto triggers a complete reload
@@ -28,7 +28,7 @@ class QAutomatePlugin {
           printSummary('bgRed', 'Found missing items')
           break
         case 'manual':
-          presentManualOptions()
+          await presentManualOptions()
           break
 
       }
@@ -42,31 +42,39 @@ class QAutomatePlugin {
 }
 
 const presentManualOptions = () => {
-
-  const missingItems = qAutomate.getAnalysisResult().missing
-  let choices = []
-
-  for (let group in missingItems) {
-    choices.push(new inquirer.Separator(chalk`{green ${group} }`))
-
-
-    for (let item of missingItems[group]) {
-      choices.push({
-        name: item
-      })
+  return new Promise(resolve => {
+    const missingItems = qAutomate.getAnalysisResult().missing
+    let choices = []
+  
+    for (let group in missingItems) {
+      choices.push(new inquirer.Separator(chalk`
+  {bgWhite {black ${group}}}
+      `))
+    
+    
+      for (let item of missingItems[group]) {
+        choices.push({
+          name: item
+        })
+      }
     }
-  }
-
-  inquirer.prompt([
-    {
-      type: 'checkbox',
-      message: chalk`{bgGreen Select items to add to quasar.conf.js}`,
-      name: 'items',
-      choices: choices
-    }
-  ]).then(answers => {
-    console.log(answers.items)
-    qAutomate.applyChanges(answers.items)
+  
+    inquirer.prompt([
+      {
+        type: 'checkbox',
+        message: chalk`{bgGreen Select items to add to quasar.conf.js}`,
+        name: 'items',
+        choices: choices,
+        prefix: '',
+        pageSize: 20
+      }
+    ]).then(answers => {
+      qAutomate.applyChanges(answers.items)
+      resolve()
+    })
+    console.log(`
+    
+    `) // To add a line before the dev server message.
   })
 }
 
