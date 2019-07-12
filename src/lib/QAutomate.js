@@ -65,10 +65,17 @@ module.exports = class QAutomate {
   scanForSourceItems (group, source) {
     const result = []
     for (let wlItem of this._whitelists[group]) {
-      const sourceComponent = paramCase(wlItem.name)
+      const sourceItem = paramCase(wlItem.name)
+      const itemSearchVariations = [
+        `${sourceItem}>`,
+        `${sourceItem} `,
+        `${sourceItem}.`,
+        `${sourceItem}=`
+      ]
+      
       if (
         // Normal component / directive etc.
-        source.indexOf(sourceComponent) > -1 ||
+        itemSearchVariations.some(s => source.indexOf(s) > -1) ||
         (
           // Something like a plugin (not testing for plugin so it's more future proof)
           wlItem.injectionMethod.indexOf('$q.') > -1 &&
@@ -157,7 +164,6 @@ module.exports = class QAutomate {
    */
   applyChanges (selectedItems = []) {
     for (let group in this._analysis.merged) {
-  
       // Pick out only the selected items for this group or add them all based on selectedItems
       let itemsToReplace = selectedItems.length > 0
         ? this.mergeArrays(this._analysis.existing[group], this._analysis.missing[group], f => selectedItems.includes(f))
