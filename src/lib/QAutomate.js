@@ -12,13 +12,13 @@ module.exports = class QAutomate {
     this._originalQuasarConfFileData = this._quasarConfFileData
     this._options = options
     this._forceApplyChanges = false
-
+    this._whitelists = {}
+  
     this.reset()
     this.buildWhitelist()
   }
 
   reset () {
-    this._whitelists = {}
     this._analysis = {
       existing: {},
       missing: {},
@@ -37,8 +37,9 @@ module.exports = class QAutomate {
    */
   buildWhitelist () {
     const quasarUiPath = this._api.resolve.app(path.join('node_modules', 'quasar', 'dist', 'api'))
+    
     let files = fs.readdirSync(quasarUiPath)
-
+    
     for (let file of files) {
       const
         data = require(path.join(quasarUiPath, file)),
@@ -168,6 +169,8 @@ module.exports = class QAutomate {
       }
       
       if (itemsToReplace !== void 0) {
+        // Make sure we're keeping track of what changes as we're only loading the quasar.conf.js once.
+        this._quasarConf.framework[group] = itemsToReplace
         this._quasarConfFileData = this._quasarConfFileData.replace(this.getGroupRegex(group), this.stringifyConfGroup(group, itemsToReplace))
       }
     }
