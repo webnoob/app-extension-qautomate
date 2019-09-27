@@ -1,7 +1,8 @@
 QAutomate (qautomate) - DEPRECATED
 ===
 
-#THIS AE IS NOW DEPRECATED
+# THIS AE IS NOW DEPRECATED
+
 Quasar now supports Automatic component injection by default so this is no longer required.
 
 For more information: https://quasar.dev/quasar-cli/quasar-conf-js#Auto-import-feature
